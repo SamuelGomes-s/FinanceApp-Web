@@ -36,6 +36,9 @@ const LinkBtn = styled.a`
     &:hover{
         transform: scale(1.03);
         color: #000;
+    };
+    &:disabled{
+       cursor: not-allowed;
     }
 `;
 

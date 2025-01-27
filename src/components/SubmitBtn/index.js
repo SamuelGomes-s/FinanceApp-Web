@@ -1,8 +1,8 @@
 import styled from "styled-components"
 
-export function SubmitBtn({ children }) {
+export function SubmitBtn({ disabled, children }) {
     return (
-        <Button type="submit">
+        <Button type="submit" disabled={disabled} >
             {children}
         </Button>
     )
@@ -32,5 +32,6 @@ const Button = styled.button`
     &:disabled{
         background-color: #DDD;
         color: #000;
+        cursor: not-allowed;
     }
 `;
