@@ -19,7 +19,7 @@ const Content = styled.div`
 `;
 
 const InputStyled = styled.input`
-    width: 500px;
+    width: 100%;  
     border: 1px solid #171717;
     box-shadow: 2px 2px 2px #171717;
     outline: 0;

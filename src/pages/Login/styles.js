@@ -21,6 +21,7 @@ const Content = styled.div`
 const LoginForm = styled.form`
     display: flex;
     flex-direction: column;
+    width: 500px;
 `;
 
 
