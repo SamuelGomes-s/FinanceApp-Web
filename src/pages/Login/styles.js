@@ -39,7 +39,7 @@ const LinkBtn = styled.a`
         color: #000;
     };
     &:disabled{
-       cursor: not-allowed;
+        cursor: not-allowed;
     }
 `;
 
