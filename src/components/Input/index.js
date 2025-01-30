@@ -27,6 +27,11 @@ const InputStyled = styled.input`
     height: 45px;
     padding: 0 0.7em;
     border-radius: 8px;
+    &:disabled{
+        background-color:rgba(214, 214, 214, 0.4);
+        cursor: not-allowed;
+        color:rgb(146, 146, 146)
+    }
 `;
 
 const Error = styled.span`
