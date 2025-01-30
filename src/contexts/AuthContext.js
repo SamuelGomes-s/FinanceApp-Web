@@ -90,7 +90,8 @@ export default function AuthContextProvider({ children }) {
                 loadingAuth,
                 setLoadingAuth,
                 loadingUser,
-                LogOut
+                LogOut,
+                user
             }}
         >
             {children}
