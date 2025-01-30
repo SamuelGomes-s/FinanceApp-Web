@@ -1,13 +1,31 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { auth } from "../services/firebase/firebaseConnection"
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { toast } from "react-toastify";
 export const AuthContext = createContext();
 
 export default function AuthContextProvider({ children }) {
 
     const [user, setUser] = useState(null)
+    const [loadingUser, setLoadingUser] = useState(true)
     const [loadingAuth, setLoadingAuth] = useState(false)
+
+    useEffect(() => {
+        const unSub = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUser({
+                    name: user?.displayName,
+                    uid: user?.uid,
+                    email: user?.email
+                });
+                setLoadingUser(false)
+            } else {
+                setUser(null);
+                setLoadingUser(false)
+            }
+        });
+        return () => unSub();
+    }, [])
 
     async function handleSignIn(data) {
         try {
@@ -54,6 +72,15 @@ export default function AuthContextProvider({ children }) {
         }
     }
 
+    async function LogOut() {
+        try {
+            signOut(auth)
+            toast.success('Deslogado com sucesso')
+        } catch (error) {
+            console.log(error.message)
+            toast.error(error.message)
+        }
+    }
     return (
         <AuthContext.Provider
             value={{
@@ -61,7 +88,9 @@ export default function AuthContextProvider({ children }) {
                 handleSignIn,
                 handleSignUp,
                 loadingAuth,
-                setLoadingAuth
+                setLoadingAuth,
+                loadingUser,
+                LogOut
             }}
         >
             {children}

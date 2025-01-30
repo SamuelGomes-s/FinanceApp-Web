@@ -4,29 +4,31 @@ import Layout from './components/Layout';
 import Home from '../src/pages/Home/index'
 import Profile from '../src/pages/Profile/index'
 import Register from '../src/pages/Register/index'
+import Private from './routes/Private';
 
 export const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <Private><Layout /></Private>,
     children: [
       {
         path: "/home",
-        element: <Home />
+        element:  <Home/>
       },
       {
         path: "/register",
-        element: <Register />
+        element:  <Register/>
       },
       {
         path: "/profile",
-        element: <Profile />
+        element: <Profile/>
       },
-
     ]
   },
   {
     path: "/",
-    element: <Login />,
+    element: <Private redirectTo="/home" invert>
+      <Login />
+    </Private>
   }
 ])
 
