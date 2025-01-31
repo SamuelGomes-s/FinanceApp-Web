@@ -5,9 +5,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { useContext, useEffect } from "react";
-import { db } from "../../services/firebase/firebaseConnection"
+import { auth, db } from "../../services/firebase/firebaseConnection"
 import { AuthContext } from "../../contexts/AuthContext"
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 const schema = z.object({
@@ -48,8 +48,40 @@ export default function Register() {
                 createdAt: new Date()
             }
             const response = await addDoc(collection(db, 'finances'), doc)
+            await handleBalance(data)
             toast.success(`Registro ${response.id} criado com sucesso`)
             reset()
+        } catch (error) {
+            console.log(error.message)
+            toast.error(error.message)
+        }
+    }
+
+    async function handleBalance(data) {
+        try {
+            const { type, value } = data
+            const currentUser = auth.currentUser.uid
+            if (!currentUser) {
+                toast.error("Usuario não está logado.")
+                return
+            }
+            const docRef = doc(db, 'balance', currentUser)
+            const get = await getDoc(docRef)
+            let newBalance = value
+            if (get.exists()) {
+                let balance = get.data()?.balance || 0
+                newBalance = type === "receive" ? balance + value : balance - value
+                const responseUpdate = await setDoc(docRef, {
+                    updatedAt: new Date(),
+                    balance: newBalance
+                }, { merge: true })
+                return
+            }
+            const responseNew = await setDoc(docRef, {
+                balance: newBalance || 0,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            })
         } catch (error) {
             console.log(error.message)
             toast.error(error.message)
