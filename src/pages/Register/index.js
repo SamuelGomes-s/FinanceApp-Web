@@ -4,11 +4,12 @@ import { SubmitBtn } from "../../components/SubmitBtn/index"
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { auth, db } from "../../services/firebase/firebaseConnection"
 import { AuthContext } from "../../contexts/AuthContext"
 import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
+import Loading from "../../components/Loader";
 
 const schema = z.object({
     name: z.string().nonempty('O nome da movimentação deve ser preenchido ex: Conta de energia...').min(3, 'O nome da movimentação deve ser pelo menos 3 letras...'),
@@ -22,12 +23,13 @@ const schema = z.object({
 export default function Register() {
 
     const { user } = useContext(AuthContext)
+    const [loading, setLoading] = useState(false)
 
     const methods = useForm({
         shouldUnregister: true,
         resolver: zodResolver(schema),
         mode: 'onChange'
-    });
+    })
 
     const { handleSubmit, reset, register } = methods;
 
@@ -36,9 +38,10 @@ export default function Register() {
     }, [])
 
     async function handleAdd(data) {
+        setLoading(true)
         try {
             const { name, value, description, type } = data
-            let doc = {
+            let newDoc = {
                 name,
                 value,
                 description: description || null,
@@ -47,25 +50,27 @@ export default function Register() {
                 uid: user?.uid,
                 createdAt: new Date()
             }
-            const response = await addDoc(collection(db, 'finances'), doc)
+            const response = await addDoc(collection(db, 'finances'), newDoc)
             await handleBalance(data)
             toast.success(`Registro ${response.id} criado com sucesso`)
             reset()
+            setLoading(false)
         } catch (error) {
             console.log(error.message)
             toast.error(error.message)
+            setLoading(false)
         }
     }
 
     async function handleBalance(data) {
         try {
             const { type, value } = data
-            const currentUser = auth.currentUser.uid
+            const currentUser = auth.currentUser
             if (!currentUser) {
                 toast.error("Usuario não está logado.")
                 return
             }
-            const docRef = doc(db, 'balance', currentUser)
+            const docRef = doc(db, 'balance', currentUser.uid)
             const get = await getDoc(docRef)
             let newBalance = value
             if (get.exists()) {
@@ -104,7 +109,7 @@ export default function Register() {
                         <OptionStyled value={'receive'}>Receita</OptionStyled>
                         <OptionStyled value={'cost'}>Despesa</OptionStyled>
                     </SelectStyled>
-                    <SubmitBtn>Registrar</SubmitBtn>
+                    <SubmitBtn>{loading ? <Loading /> : 'Registrar'}</SubmitBtn>
                 </FinanceRegForm>
             </FormProvider>
         </Container>
