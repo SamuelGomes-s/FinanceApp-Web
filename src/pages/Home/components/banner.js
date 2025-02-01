@@ -10,16 +10,13 @@ export default function Banner({ color, type, value }) {
     )
 }
 
-
-
-
-
 const Container = styled.div`
     height: 200px;
-    width: 300px;
+    width: 100%;
+    min-width: 250px;
     position: relative;
     background-color: ${props => props.bg};
-    margin-left: 15px;
+    /* margin-left: 15px; */
     border-radius: 8px;
     justify-content: center;
     align-items: center;
