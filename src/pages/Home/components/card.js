@@ -1,25 +1,44 @@
 import styled from "styled-components";
 import { IoArrowDownOutline, IoArrowUpOutline } from "react-icons/io5";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
 import { useState } from "react";
+import Loading from "../../../components/Loader";
 
-export default function Card({ data }) {
+export default function Card({ data, deleteItem, editItem, loader }) {
     const [status, setStatus] = useState(data?.type)
+
+    function handleDelete() {
+        deleteItem(data)
+    }
+    function handleEdit() {
+        editItem(data.id)
+    }
 
     return (
         <Container>
             <Text>{data?.name}</Text>
             <Divisor />
-            <Description>{data?.description == null ? 'Registro não possui dados adicionais...' : data?.description}</Description>
+            <Description>{data?.description == null ? 'Sem descrição disponível.' : data?.description}</Description>
             <Divisor />
             <Info>
                 <Value>R$ {data?.value}</Value>
-                {status == 'cost' ? (<Type status={status}> <IoArrowDownOutline /> Despesas </Type>) :
-                    (<Type status={status}> <IoArrowUpOutline /> Receitas </Type>)}
+                <Type status={status}>
+                    {status === 'cost' ? <IoArrowDownOutline /> : <IoArrowUpOutline />}
+                    {status === 'cost' ? " Despesas" : " Receitas"}
+                </Type>
             </Info>
-            <DeleteBtn>
-                <FaRegTrashAlt size={25} />
-            </DeleteBtn>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: 'center', gap: 10 }}>
+                {loader ? (<Loading />) : (
+                    <>
+                        <ActionBtn onClick={handleDelete} hover={' #ef463a'}>
+                            <FaRegTrashAlt size={25} />
+                        </ActionBtn>
+                        <ActionBtn onClick={handleEdit} hover={' #3b3dbf'}>
+                            <MdEdit size={25} />
+                        </ActionBtn>
+                    </>)}
+            </div>
         </Container>
     )
 }
@@ -80,7 +99,7 @@ const Value = styled.span`
     color: #000;
 `;
 
-const DeleteBtn = styled.button`
+const ActionBtn = styled.button`
     border: 0;
     cursor: pointer;
     margin-top: 1.2em;
@@ -88,9 +107,10 @@ const DeleteBtn = styled.button`
     transition: ease-in-out 0.5ms;
     &:hover{
         transform: scale(1.1);
-        color:  #ef463a;
+        color: ${props => props.hover};
     };
     &:active{
         transform: scale(1.0);
     }
 `;
+
