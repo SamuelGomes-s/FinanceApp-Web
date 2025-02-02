@@ -47,10 +47,13 @@ const Container = styled.div`
     width: 120px;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    justify-content: center;
+    padding-top: 2em;
+    min-height: 100dvh;
+    justify-content:  flex-start;
     gap: 5px;
     @media screen and (max-width: 700px) {
+        padding-top: 0;
+        min-height: 0;
         max-height: 50px;
         width: 100%;
         flex-direction: row;
