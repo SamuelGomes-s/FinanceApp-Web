@@ -10,6 +10,7 @@ import { AuthContext } from "../../contexts/AuthContext"
 import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import Loading from "../../components/Loader";
+import { useNavigate, useParams } from "react-router-dom";
 
 const schema = z.object({
     name: z.string().nonempty('O nome da movimentação deve ser preenchido ex: Conta de energia...').min(3, 'O nome da movimentação deve ser pelo menos 3 letras...'),
@@ -21,21 +22,52 @@ const schema = z.object({
 })
 
 export default function Register() {
-
+    
     const { user } = useContext(AuthContext)
+    const [title, setTitle] = useState('Cadastro de movimentação')
+    const [msg, setMsg] = useState('Cadastrar')
     const [loading, setLoading] = useState(false)
-
+    const { id } = useParams()
+    const navigate = useNavigate()
     const methods = useForm({
         shouldUnregister: true,
         resolver: zodResolver(schema),
         mode: 'onChange'
     })
-
     const { handleSubmit, reset, register } = methods;
 
     useEffect(() => {
-        reset()
-    }, [])
+        if (id) {
+            loadReg()
+        } else {
+            reset()
+        }
+    }, [id])
+
+    async function loadReg() {
+        setLoading(true)
+        try {
+            if (!id) {
+                return
+            }
+            const docRef = doc(db, 'finances', id)
+            const docSnap = await getDoc(docRef)
+            if (!docSnap.exists()) {
+                toast.warn(`Não possui um registro com o id: ${id}`)
+                toast.warn('Redirecionando para a tela de novo registro.')
+                navigate('/register')
+            }
+            reset(
+                docSnap.data()
+            )
+            setTitle(`Editando movimentação: ${id}`)
+            setMsg('Atualizar')
+            setLoading(false)
+        } catch (error) {
+            toast.error(error.message)
+            setLoading(false)
+        }
+    }
 
     async function handleAdd(data) {
         setLoading(true)
@@ -48,12 +80,25 @@ export default function Register() {
                 type,
                 owner: user?.name,
                 uid: user?.uid,
-                createdAt: new Date()
+                updateAt: new Date()
             }
-            const response = await addDoc(collection(db, 'finances'), newDoc)
-            await handleBalance(data)
-            toast.success(`Registro ${response.id} criado com sucesso`)
-            reset()
+            if (id) {
+                const docRef = doc(db, 'finances', id)
+                await setDoc(docRef, newDoc, { merge: true })
+                toast.success('Registro atualizado com sucesso.')
+                const nav = window.confirm("Deseja ser redirecionado para a pagina home?")
+                if (nav) {
+                    navigate('/home')
+                }
+            } else {
+                const response = await addDoc(collection(db, 'finances'), {
+                    ...newDoc,
+                    createdAt: new Date()
+                })
+                await handleBalance(data)
+                toast.success(`Registro ${response.id} criado com sucesso`)
+                reset()
+            }
             setLoading(false)
         } catch (error) {
             console.log(error.message)
@@ -95,13 +140,13 @@ export default function Register() {
 
     return (
         <Container>
-            <Title>Regitrar movimentação</Title>
+            <Title>{title}</Title>
             <FormProvider {...methods} >
                 <FinanceRegForm onSubmit={handleSubmit(handleAdd)}>
                     <LabelStyled>Nome:</LabelStyled>
                     <Input type='text' placeholder='Digite o nome da movimentação' name='name' />
                     <LabelStyled>Descrição:</LabelStyled>
-                    <TextAreaReg placeholder='Digite a descrição da movimentação (opcional)' {...register('description')} />
+                    <TextAreaReg maxLength={250} placeholder='Digite a descrição da movimentação (opcional)' {...register('description')} />
                     <LabelStyled>Valor:</LabelStyled>
                     <Input type='number' placeholder='Digite o valor da movimentação' name='value' />
                     <LabelStyled>Tipo de movimentação:</LabelStyled>
@@ -109,7 +154,7 @@ export default function Register() {
                         <OptionStyled value={'receive'}>Receita</OptionStyled>
                         <OptionStyled value={'cost'}>Despesa</OptionStyled>
                     </SelectStyled>
-                    <SubmitBtn>{loading ? <Loading /> : 'Registrar'}</SubmitBtn>
+                    <SubmitBtn>{loading ? <Loading /> : msg}</SubmitBtn>
                 </FinanceRegForm>
             </FormProvider>
         </Container>
