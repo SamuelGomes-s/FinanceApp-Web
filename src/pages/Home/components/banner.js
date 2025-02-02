@@ -1,11 +1,16 @@
 import styled from "styled-components"
 
 export default function Banner({ color, type, value }) {
-
+    let newValue;
+    if (value < 0) {
+        newValue = `- R$ ${Math.abs(value)} `
+    } else {
+        newValue = `R$ ${value} `
+    }
     return (
-        <Container bg={color}>
+        <Container $bg={color}>
             <Title> {type}</Title>
-            <Value>R$ {value}</Value>
+            <Value>{newValue}</Value>
         </Container>
     )
 }
@@ -15,7 +20,7 @@ const Container = styled.div`
     width: 100%;
     min-width: 250px;
     position: relative;
-    background-color: ${props => props.bg};
+    background-color: ${props => props.$bg};
     /* margin-left: 15px; */
     border-radius: 8px;
     justify-content: center;

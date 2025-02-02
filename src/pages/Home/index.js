@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { BannersContainer, CardsContainer } from "./styles";
 import Loading from "../../components/Loader";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 
 export default function Home() {
     const navigate = useNavigate()
@@ -48,9 +49,13 @@ export default function Home() {
             let totalCost = 0
             querySnapshot.forEach(item => {
                 let regData = item.data()
+                // console.log(regData?.createdAt)
+                let time = regData?.createdAt.toDate()
+                let formated = format(new Date(time), 'dd/MM/yyyy')
+                console.log(formated)
                 info.push({
                     id: item.id,
-                    createdAt: regData?.createdAt,
+                    createdAt: formated,
                     description: regData?.description,
                     name: regData?.name,
                     owner: regData?.owner,

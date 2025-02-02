@@ -20,6 +20,7 @@ export default function Card({ data, deleteItem, editItem, loader }) {
             <Text>{data?.name}</Text>
             <Divisor />
             <Description>{data?.description == null ? 'Sem descrição disponível.' : data?.description}</Description>
+            <Date>Cadastrado em {data?.createdAt}</Date>
             <Divisor />
             <Info>
                 <Value>R$ {data?.value}</Value>
@@ -46,12 +47,13 @@ export default function Card({ data, deleteItem, editItem, loader }) {
 
 const Container = styled.div`
     width: 100%;
-    height: 350px;
+    max-height: 400px;
     background-color:#E0E5F8;
     display: flex;
     flex-direction: column;
     padding: 0.7em;
     border-radius: 8px;
+    max-width: 450px;
 `;
 
 const Text = styled.span`
@@ -65,12 +67,13 @@ const Divisor = styled.div`
     border: 1px solid  #2B2D42;
 `;
 
-const Description = styled.div`
+const Description = styled.p`
     background-color: #FFFFFF;
     margin: 15px 0;
     min-height: 150px;
     border-radius: 8px;
     padding: 0.5em;
+    word-wrap: break-word;  
 `;
 
 const Type = styled.span`
@@ -112,5 +115,10 @@ const ActionBtn = styled.button`
     &:active{
         transform: scale(1.0);
     }
+`;
+
+const Date = styled.span`
+    font-size: 16px;
+    margin-bottom: 0.5em;
 `;
 
