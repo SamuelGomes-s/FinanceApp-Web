@@ -24,7 +24,7 @@ export default function Card({ data, deleteItem, editItem, loader }) {
             <Divisor />
             <Info>
                 <Value>R$ {data?.value}</Value>
-                <Type status={status}>
+                <Type $status={status}>
                     {status === 'cost' ? <IoArrowDownOutline /> : <IoArrowUpOutline />}
                     {status === 'cost' ? " Despesas" : " Receitas"}
                 </Type>
@@ -32,10 +32,10 @@ export default function Card({ data, deleteItem, editItem, loader }) {
             <div style={{ display: "flex", alignItems: "center", justifyContent: 'center', gap: 10 }}>
                 {loader ? (<Loading />) : (
                     <>
-                        <ActionBtn onClick={handleDelete} hover={' #ef463a'}>
+                        <ActionBtn onClick={handleDelete} $hover={' #ef463a'}>
                             <FaRegTrashAlt size={25} />
                         </ActionBtn>
-                        <ActionBtn onClick={handleEdit} hover={' #3b3dbf'}>
+                        <ActionBtn onClick={handleEdit} $hover={' #3b3dbf'}>
                             <MdEdit size={25} />
                         </ActionBtn>
                     </>)}
@@ -78,7 +78,7 @@ const Description = styled.p`
 
 const Type = styled.span`
     display: flex;
-    background-color:${props => props.status == 'cost' ? '#EF463A' : '#00B94a'};
+    background-color:${props => props.$status == 'cost' ? '#EF463A' : '#00B94a'};
     border-radius: 80px;
     width: 100px;
     color: #FFFFFF;
@@ -110,7 +110,7 @@ const ActionBtn = styled.button`
     transition: ease-in-out 0.5ms;
     &:hover{
         transform: scale(1.1);
-        color: ${props => props.hover};
+        color: ${props => props.$hover};
     };
     &:active{
         transform: scale(1.0);

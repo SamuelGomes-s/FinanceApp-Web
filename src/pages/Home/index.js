@@ -21,7 +21,7 @@ export default function Home() {
 
     const dateFormated = format(new Date(), 'dd/MM/yyyy')
     const [date, setDate] = useState(dateFormated)
-    const [startDate, setStartDate] = useState(dateFormated)
+    const [startDate, setStartDate] = useState(new Date())
 
     useEffect(() => {
         if (auth.currentUser) {
@@ -56,7 +56,7 @@ export default function Home() {
             let totalCost = 0
             querySnapshot.forEach(item => {
                 let regData = item.data()
-                let time = regData?.createdAt
+                let time = regData?.createdAt.toDate()
                 let formated = format(new Date(time), 'dd/MM/yyyy')
                 info.push({
                     id: item.id,
@@ -75,7 +75,9 @@ export default function Home() {
                 }
             })
             const dateFormated = format(new Date(), 'dd/MM/yyyy')
-            setDate(dateFormated)
+            if (date !== dateFormated) {
+                setDate(dateFormated)
+            }
             setFinances(info)
             setCost(totalCost)
             setReceive(totalReceive)
@@ -161,7 +163,7 @@ export default function Home() {
             let totalCost = 0
             querySnapshot.forEach(item => {
                 let regData = item.data()
-                let time = regData?.createdAt
+                let time = regData?.createdAt.toDate()
                 let formated = format(new Date(time), 'dd/MM/yyyy')
                 info.push({
                     id: item.id,
