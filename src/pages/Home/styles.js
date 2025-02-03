@@ -1,5 +1,12 @@
 import styled from "styled-components";
 
+const Container = styled.div`
+    margin: 0 auto;
+    padding-bottom: 0.7em;
+    @media screen and (max-width: 700px) {
+        margin: 0;
+    }
+`;
 
 const BannersContainer = styled.div`
     display: grid;
@@ -37,7 +44,41 @@ const CardsContainer = styled.div`
     }
 `;
 
+const FilterContainer = styled.div`
+        background-color:rgba(43, 45, 66, 0.55);
+        width: 90%;
+        height: 40px;
+        border-radius: 8px;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        margin: auto;
+        gap: 5px;
+`;
+
+const Filter = styled.button`
+    background-color:#3b3dbf;
+    cursor: pointer;
+    border:  0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #E0E5F8 ;
+    transition: all 0.5s;
+    padding: 0.6em;
+    &:hover{
+        text-decoration: underline;
+        background-color:rgb(0, 21, 255);
+    }
+    @media screen and (max-width: 700px) {
+        width: auto;
+        padding: 0.5em  0.6em;
+    }
+`;
+
 export {
     BannersContainer,
-    CardsContainer
+    CardsContainer,
+    FilterContainer,
+    Filter,
+    Container
 }
